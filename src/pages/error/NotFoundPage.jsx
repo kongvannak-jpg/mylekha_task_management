@@ -23,13 +23,13 @@ const NotFoundPage = () => {
                     label="Go Back"
                     icon="pi pi-arrow-left"
                     outlined
-                    // Use standard PrimeReact severity for colors if possible, or keep custom classes
+                    className='dark:border-blue-500 dark:text-blue-500 dark:hover:border-blue-300 dark:hover:text-blue-400'
                     onClick={() => navigate(-1)}
                 />
                 <Button
                     label="Dashboard"
                     icon="pi pi-home"
-                    severity="success" // This will use the green from lara-light-green
+                    className='bg-emerald-600 hover:bg-emerald-500 dark:bg-blue-500 dark:hover:bg-blue-600'
                     onClick={() => navigate('/dashboard')}
                 />
             </div>

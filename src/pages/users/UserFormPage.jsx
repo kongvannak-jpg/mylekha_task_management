@@ -136,14 +136,14 @@ const UserFormPage = () => {
                                         <Avatar
                                             image={avatarPreview}
                                             size="xlarge"
-                                            shape="circle"
-                                            className="w-24 h-24"
+                                            // shape="circle"
+                                            className="w-50 h-50"
                                         />
                                         <Button
                                             icon="pi pi-times"
                                             rounded
                                             severity="danger"
-                                            className="absolute -top-2 -right-2 !w-8 !h-8"
+                                            className="absolute -top-2 -right-2"
                                             onClick={removeAvatar}
                                         />
                                     </div>
@@ -151,8 +151,7 @@ const UserFormPage = () => {
                                     <Avatar
                                         label={formData.name ? formData.name.charAt(0).toUpperCase() : 'U'}
                                         size="xlarge"
-                                        shape="circle"
-                                        className="w-24 h-24 bg-emerald-100 dark:bg-blue-100 text-emerald-700 dark:text-blue-700 text-2xl"
+                                        className="w-50 h-50 bg-emerald-100 dark:bg-blue-100 text-emerald-700 dark:text-blue-700 text-2xl"
                                     />
                                 )}
 
@@ -220,7 +219,7 @@ const UserFormPage = () => {
                                     placeholder="••••••••"
                                     toggleMask
                                     className="w-full"
-                                    inputClassName="w-full"
+                                    inputStyle={{ width: '100%' }}
                                 />
                             </div>
 
@@ -266,12 +265,19 @@ const UserFormPage = () => {
                                         id="status"
                                         checked={formData.status}
                                         onChange={(e) => handleInputChange('status', e.value)}
+                                        pt={{
+                                            slider: ({ props }) => ({
+                                                className: props.checked
+                                                    ? 'dark:bg-blue-600 bg-emerald-600'
+                                                    : 'bg-slate-300 dark:bg-slate-700'
+                                            })
+                                        }}
                                     />
                                     <label htmlFor="status" className="cursor-pointer font-medium">
                                         {formData.status ? (
-                                            <span className="text-emerald-600 dark:text-emerald-400">{t('active')}</span>
+                                            <span className="text-emerald-600 dark:text-blue-500">{t('active')}</span>
                                         ) : (
-                                            <span className="text-slate-500 dark:text-slate-400">{t('inactive')}</span>
+                                            <span className="text-slate-500 dark:text-blue-300">{t('inactive')}</span>
                                         )}
                                     </label>
                                 </div>

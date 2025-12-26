@@ -145,3 +145,112 @@ body {
   opacity: 0;
   cursor: pointer;
 }
+
+/* Force the container that holds the input and the icon to be full width */
+.p-password .p-icon-field {
+  width: 100% !important;
+}
+
+/* Ensure the icon stays positioned correctly inside the full-width field */
+.p-password .p-input-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 65%;
+  transform: translateY(-50%);
+}
+
+.dark .p-inputtext {
+  @apply dark:border-none dark:bg-slate-700 dark:text-white;
+}
+
+/* Optional: Ensure focus state looks good in dark mode */
+.dark .p-inputtext:focus {
+  background-color: #1e293b !important;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* 1. Target the main dropdown container */
+.dark .p-dropdown {
+  background-color: #334155 !important;
+  /* slate-700 */
+  border-color: #475569 !important;
+  /* slate-600 */
+}
+
+/* 2. Target the text inside the dropdown */
+.dark .p-dropdown .p-dropdown-label {
+  color: #ffffff !important;
+}
+
+/* 3. Target the arrow button background */
+.dark .p-dropdown .p-dropdown-trigger {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* 4. Target the dropdown panel (the list that pops up) */
+.dark .p-dropdown-panel {
+  background-color: #1e293b !important;
+  /* slate-800 */
+  color: #ffffff !important;
+}
+
+/* 5. Target the items inside the list when hovering */
+.dark .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  color: #ffffff !important;
+}
+
+.dark .p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  background-color: #334155 !important;
+}
+
+/* Target the dropdown container when it has focus */
+.dark .p-dropdown.p-focus {
+  background-color: #1e293b !important;
+  /* slate-800: slightly darker on focus */
+  border-color: #3b82f6 !important;
+  /* blue-500: clear focus border */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+  /* Blue glow */
+}
+
+/* Ensure the label text remains white during focus */
+.dark .p-dropdown.p-focus .p-dropdown-label {
+  color: #ffffff !important;
+}
+
+/* Ensure the arrow icon remains white during focus */
+.dark .p-dropdown.p-focus .p-dropdown-trigger {
+  color: #ffffff !important;
+}
+
+.logo-entry {
+  animation: entrance 1s ease-out forwards, float 3s ease-in-out infinite 1s;
+  opacity: 0;
+}
+
+/* Initial Entrance: Fade in and Scale up */
+@keyframes entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Continuous Floating Effect */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}

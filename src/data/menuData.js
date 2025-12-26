@@ -65,6 +65,12 @@ export const ACCOUNT_ITEMS = [
         path: '/users'
     },
     {
+        key: 'roles',
+        label: 'roles',
+        icon: 'pi pi-file',
+        path: '/roles'
+    },
+    {
         key: 'sign_in',
         label: 'sign_in',
         icon: 'pi pi-sign-in',

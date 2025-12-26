@@ -46,6 +46,15 @@ const resources = {
             "inactive": "Inactive",
             "create_new": "Create New",
             "profile_picture": "Profile Picture",
+            "users": "Users",
+            "user": "User",
+            "admin": "Admin",
+            "upload_picture": " Upload Picture",
+            "type_to_search": "Type to search...",
+            "new_role": "New Role",
+            "permissions": "Permissions",
+            "actions": "Actions",
+            "roles": "Roles",
         }
     },
     km: {
@@ -92,6 +101,15 @@ const resources = {
             "inactive": "មិនសកម្ម",
             "create_new": "បង្កើតថ្មី",
             "profile_picture": "រូបភាពប្រវត្តិរូប",
+            "users": "អ្នកប្រើប្រាស់",
+            "user": "អ្នកប្រើប្រាស់",
+            "admin": "អ្នកគ្រប់គ្រង",
+            "upload_picture": "ផ្ទុករូបភាព",
+            "type_to_search": "វាយដើម្បីស្វែងរក...",
+            "new_role": "តួនាទីថ្មី",
+            "permissions": "ការអនុញ្ញាត",
+            "actions": "សកម្មភាព",
+            "roles": "តួនាទី",
         }
     }
 };

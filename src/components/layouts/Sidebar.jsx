@@ -104,7 +104,8 @@ const Sidebar = ({ collapsed, onLinkClick }) => {
         <aside className="flex flex-col w-full h-full bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 transition-colors duration-300">
             {/* Logo Area */}
             <div className={`h-16 flex items-center px-6 border-b border-gray-50 dark:border-slate-700 ${collapsed ? 'justify-center' : 'gap-3'}`}>
-                <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
+                {/* <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">M</div> */}
+                <img width={35} src="https://i0.wp.com/mylekha.net/wp-content/uploads/2025/08/cropped-mylekha_logo.png?fit=512%2C512&ssl=1" alt="" />
                 {!collapsed && <span className="font-bold text-xl text-slate-800 dark:text-slate-400 tracking-tight">MyLekha</span>}
             </div>
 
