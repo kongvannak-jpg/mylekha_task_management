@@ -14,6 +14,9 @@ import NotFoundPage from '../pages/error/NotFoundPage';
 // Layout
 import MainLayout from '../components/layouts/MainLayout';
 import RolesPage from '../pages/roles/RolesPage';
+import RoleFormPage from '../pages/roles/RoleFormPage';
+import UserProfilePage from '../pages/users/UserProfilePage';
+import TaskFormPage from '../pages/tasks/TaskFormPage';
 
 export const AppRoutes = () => {
     return (
@@ -38,6 +41,7 @@ export const AppRoutes = () => {
 
                 {/* Tasks - All authenticated users */}
                 <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/tasks/form" element={<TaskFormPage />} />
 
                 {/* Users Management - Admin only */}
                 <Route
@@ -48,7 +52,14 @@ export const AppRoutes = () => {
                         // </ProtectedRoute>
                     }
                 />
-
+                <Route
+                    path="/users/profile/:id"
+                    element={
+                        // <ProtectedRoute requiredRoles={['admin']}>
+                        <UserProfilePage />
+                        // </ProtectedRoute>
+                    }
+                />
                 {/* User Form - Admin only OR users with 'manage_users' permission */}
                 <Route
                     path="/users/form"
@@ -69,7 +80,14 @@ export const AppRoutes = () => {
                         // </ProtectedRoute>
                     }
                 />
-
+                <Route
+                    path="/roles/form"
+                    element={
+                        // <ProtectedRoute requiredRoles={['admin']}>
+                        <RoleFormPage />
+                        // </ProtectedRoute>
+                    }
+                />
                 {/* Add more routes here as needed */}
                 {/* <Route
                     path="/roles"

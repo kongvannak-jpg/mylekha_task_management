@@ -40,18 +40,18 @@ export const ACCOUNT_ITEMS = [
         key: 'profile',
         label: 'profile',
         icon: 'pi pi-user',
-        path: '/profile'
+        path: '/users/profile/1'
     },
-    {
-        key: 'settings',
-        label: 'settings',
-        icon: 'pi pi-cog',
-        children: [
-            { key: 'general', label: 'general', path: '/settings/general' },
-            { key: 'security', label: 'security', path: '/settings/security' },
-            { key: 'notifications', label: 'notifications', path: '/settings/notifications' }
-        ]
-    },
+    // {
+    //     key: 'settings',
+    //     label: 'settings',
+    //     icon: 'pi pi-cog',
+    //     children: [
+    //         { key: 'general', label: 'general', path: '/settings/general' },
+    //         { key: 'security', label: 'security', path: '/settings/security' },
+    //         { key: 'notifications', label: 'notifications', path: '/settings/notifications' }
+    //     ]
+    // },
     {
         key: 'my_task',
         label: 'my_task',
