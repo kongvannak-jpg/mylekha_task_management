@@ -254,3 +254,35 @@ body {
     transform: translateY(-10px);
   }
 }
+
+/* Force TabView to follow your dark theme */
+.dark .p-tabview .p-tabview-nav {
+  background: #1e293b !important;
+  /* slate-800 */
+  border-color: #334155 !important;
+  /* slate-700 */
+}
+
+.dark .p-tabview .p-tabview-panels {
+  background: #1e293b !important;
+  /* slate-800 */
+  border: none !important;
+}
+
+/* Ensure inactive tab headers are also dark */
+.dark .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+  /* text-slate-400 */
+}
+
+/* Target the active tab header link in dark mode */
+.dark .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  @apply !text-blue-500 !border-blue-500;
+}
+
+/* Target the hover state in dark mode */
+.dark .p-tabview .p-tabview-nav li:not(.p-highlight):hover .p-tabview-nav-link {
+  @apply !text-slate-700 !border-slate-100 !border-blue-500;
+}
