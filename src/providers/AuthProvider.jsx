@@ -12,69 +12,70 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: false
     });
 
-    // Load user data on mount
     useEffect(() => {
         loadUserData();
     }, []);
 
     const loadUserData = async () => {
-        try {
-            if (authService.isAuthenticated()) {
-                // Try to get stored data first for instant load
-                const storedData = authService.getStoredUser();
-                if (storedData) {
-                    setState({
-                        user: storedData.user,
-                        roles: storedData.roles,
-                        permissions: storedData.permissions,
-                        loading: false,
-                        isAuthenticated: true
-                    });
-                }
+        if (!authService.isAuthenticated()) {
+            setState(prev => ({ ...prev, loading: false }));
+            return;
+        }
 
-                // Then fetch fresh data from API
-                const result = await authService.getCurrentUser();
-                if (result.success) {
-                    setState({
-                        user: result.data.user,
-                        roles: result.data.roles || [],
-                        permissions: result.data.permissions || [],
-                        loading: false,
-                        isAuthenticated: true
-                    });
-                } else {
-                    // Token invalid
-                    authService.logout();
-                    setState({
-                        user: null,
-                        roles: [],
-                        permissions: [],
-                        loading: false,
-                        isAuthenticated: false
-                    });
+        try {
+            // 1. Get User
+            const result = await authService.getCurrentUser();
+
+            // Unwrap User Data (Handles {data: {data: ...}} or {data: ...})
+            const responseBody = result.data || result;
+            const user = responseBody.data || responseBody;
+
+            // Safely get user info
+            const roles = user.role_name ? [user.role_name] : [];
+            let permissions = [];
+
+            // 2. Get Permissions (If role_id exists)
+            if (user.role_id) {
+                try {
+                    const permResult = await authService.getRolePermissions(user.role_id);
+
+                    if (permResult.data && permResult.data.permissions) {
+                        permissions = permResult.data.permissions;
+                    }
+                    else if (permResult.data && permResult.data.data && permResult.data.data.permissions) {
+                        permissions = permResult.data.data.permissions;
+                    }
+                    else if (permResult.permissions) {
+                        permissions = permResult.permissions;
+                    }
+
+                } catch (permError) {
+                    console.error('Failed to load permissions:', permError);
                 }
-            } else {
-                setState(prev => ({ ...prev, loading: false }));
             }
+
+            // 3. Update State
+            setState({
+                user: user,
+                roles: roles,
+                permissions: permissions || [],
+                loading: false,
+                isAuthenticated: true
+            });
+
         } catch (error) {
             console.error('Failed to load user data:', error);
-            setState(prev => ({ ...prev, loading: false }));
+
+            await authService.logout();
+            setState(prev => ({ ...prev, loading: false, isAuthenticated: false }));
         }
     };
 
     const login = async (email, password) => {
         const result = await authService.login({ email, password });
-
         if (result.success) {
-            setState({
-                user: result.data.user,
-                roles: result.data.roles || [],
-                permissions: result.data.permissions || [],
-                loading: false,
-                isAuthenticated: true
-            });
+            await loadUserData();
         }
-
         return result;
     };
 
@@ -89,12 +90,7 @@ export const AuthProvider = ({ children }) => {
         });
     }, []);
 
-    const value = {
-        ...state,
-        login,
-        logout,
-        refresh: loadUserData
-    };
+    const value = { ...state, login, logout, refresh: loadUserData };
 
     return (
         <AuthContext.Provider value={value}>

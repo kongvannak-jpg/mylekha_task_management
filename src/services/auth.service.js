@@ -1,92 +1,52 @@
 import { API_CONFIG } from '../config/api.config';
 import { storage } from '../utils/storage.util';
+import { ApiService } from './api.service';
 
-class AuthService {
-    constructor() {
-        this.baseURL = API_CONFIG.BASE_URL;
-    }
-
-    // Helper method for API calls
-    async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
-        const token = storage.getToken();
-
-        const config = {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token && { 'Authorization': `Bearer ${token}` }),
-                ...options.headers
-            }
-        };
-
-        try {
-            const response = await fetch(url, config);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Request failed');
-            }
-
-            return { success: true, data };
-        } catch (error) {
-            return {
-                success: false,
-                error: error.message || 'Network error'
-            };
-        }
-    }
-
-    // Login
+class AuthService extends ApiService {
     async login(credentials) {
         const result = await this.request(API_CONFIG.ENDPOINTS.LOGIN, {
             method: 'POST',
             body: JSON.stringify(credentials)
         });
+        const accessToken = result.data?.data?.access_token || result.data?.access_token;
 
-        if (result.success && result.data.token) {
-            storage.setToken(result.data.token);
-            storage.setUser({
-                user: result.data.user,
-                roles: result.data.roles || [],
-                permissions: result.data.permissions || []
-            });
+        if (result.success && accessToken) {
+            storage.setToken(accessToken);
+        } else {
+            console.error('❌ Login succeeded but token was not found in response:', result);
         }
 
         return result;
     }
 
-    // Get current user
-    async getCurrentUser() {
-        const result = await this.request(API_CONFIG.ENDPOINTS.ME);
-
-        if (result.success) {
-            storage.setUser({
-                user: result.data.user,
-                roles: result.data.roles || [],
-                permissions: result.data.permissions || []
-            });
-        }
-
-        return result;
-    }
-
-    // Logout
-    async logout() {
-        await this.request(API_CONFIG.ENDPOINTS.LOGOUT, {
-            method: 'POST'
+    async getRolePermissions(roleId) {
+        return await this.request(`/api/v1/roles/rpc/get_permissions?id=${roleId}`, {
+            method: 'GET'
         });
-        storage.clearAuth();
     }
 
-    // Check if user is authenticated
+    async getCurrentUser() {
+        return await this.request(API_CONFIG.ENDPOINTS.ME, {
+            method: 'GET'
+        });
+    }
+
+    // RPC Logout
+    async logout() {
+        try {
+            await this.request(API_CONFIG.ENDPOINTS.LOGOUT, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.warn('Server logout failed (likely already expired), clearing local anyway.');
+        } finally {
+            storage.clearAuth();
+            console.log('✅ Local token cleared');
+        }
+    }
+
     isAuthenticated() {
         return !!storage.getToken();
-    }
-
-    // Get stored user data
-    getStoredUser() {
-        return storage.getUser();
     }
 }
 

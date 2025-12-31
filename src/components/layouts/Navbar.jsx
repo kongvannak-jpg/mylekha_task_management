@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import React, { useRef } from 'react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 // ✅ CORRECT IMPORTS
@@ -7,10 +7,39 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Badge } from 'primereact/badge';
 import { ToggleButton } from 'primereact/togglebutton';
+import { useAuth } from '../../hooks/useAuth';
+import { Menu } from 'primereact/menu';
 
 const Navbar = ({ onMobileToggle, onDesktopToggle, isCollapsed, isDark, onToggleTheme }) => {
     const { t, i18n } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    // 1. Setup Refs and Auth
+    const menuRight = useRef(null);
+    const { logout } = useAuth();
+
+    const items = [
+        {
+            label: 'Profile',
+            icon: 'pi pi-user',
+            command: () => {
+                navigate('/profile');
+            }
+        },
+        {
+            separator: true
+        },
+        {
+            label: 'Logout',
+            icon: 'pi pi-sign-out',
+            className: 'text-red-500',
+            command: async () => {
+                await logout();
+                navigate('/login');
+            }
+        }
+    ];
 
     const getBreadcrumbs = () => {
         const path = location.pathname;
@@ -49,6 +78,7 @@ const Navbar = ({ onMobileToggle, onDesktopToggle, isCollapsed, isDark, onToggle
 
     return (
         <header className="h-16 bg-white border-b dark:bg-slate-800 border-gray-100 flex items-center justify-between px-6 shrink-0 transition-colors duration-300">
+            <Menu model={items} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
             <div className="flex items-center gap-4">
                 <Button
                     icon={isCollapsed ? "pi pi-list" : "pi pi-bars"}
@@ -98,12 +128,16 @@ const Navbar = ({ onMobileToggle, onDesktopToggle, isCollapsed, isDark, onToggle
                     <Button icon="pi pi-bell" text rounded severity="secondary" className="!w-10 !h-10  text-gray-600 dark:text-gray-300" />
                     <Badge value="3" severity="danger" className="absolute top-1 right-1" />
                 </div>
+                {/* Settings Button triggers the menu */}
                 <Button
                     icon="pi pi-cog"
                     pt={{ root: { className: "!w-10 !h-10 text-gray-600 dark:text-gray-300 flex items-center justify-center" } }}
                     text
                     rounded
                     severity="secondary"
+                    onClick={(event) => menuRight.current.toggle(event)}
+                    aria-controls="popup_menu_right"
+                    aria-haspopup
                 />
             </div>
         </header>

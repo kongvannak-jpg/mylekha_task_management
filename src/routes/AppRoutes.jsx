@@ -17,6 +17,8 @@ import RolesPage from '../pages/roles/RolesPage';
 import RoleFormPage from '../pages/roles/RoleFormPage';
 import UserProfilePage from '../pages/users/UserProfilePage';
 import TaskFormPage from '../pages/tasks/TaskFormPage';
+import DepartmentsPage from '../pages/departments/DepartmentsPage';
+import DepartmentFormPage from '../pages/departments/DepartmentFormPage';
 
 export const AppRoutes = () => {
     return (
@@ -28,9 +30,9 @@ export const AppRoutes = () => {
             {/* Protected Routes with Layout */}
             <Route
                 element={
-                    // <ProtectedRoute>
-                    <MainLayout />
-                    // </ProtectedRoute>
+                    <ProtectedRoute>
+                        <MainLayout />
+                    </ProtectedRoute>
                 }
             >
                 {/* Default Redirect */}
@@ -42,14 +44,12 @@ export const AppRoutes = () => {
                 {/* Tasks - All authenticated users */}
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/tasks/form" element={<TaskFormPage />} />
-
-                {/* Users Management - Admin only */}
                 <Route
                     path="/users"
                     element={
-                        // <ProtectedRoute requiredRoles={['admin']}>
-                        <UsersPage />
-                        // </ProtectedRoute>
+                        <ProtectedRoute requiredPermissions={['view:users']}>
+                            <UsersPage />
+                        </ProtectedRoute>
                     }
                 />
                 <Route
@@ -86,6 +86,38 @@ export const AppRoutes = () => {
                         // <ProtectedRoute requiredRoles={['admin']}>
                         <RoleFormPage />
                         // </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/roles/edit/:id"
+                    element={
+                        // <ProtectedRoute requiredPermissions={['update:role']}>
+                        <RoleFormPage />
+                        // </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/departments"
+                    element={
+                        <ProtectedRoute requiredPermissions={['view:department']}>
+                            <DepartmentsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/departments/form"
+                    element={
+                        <ProtectedRoute requiredPermissions={['create:department']}>
+                            <DepartmentFormPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/departments/edit/:id"
+                    element={
+                        <ProtectedRoute requiredPermissions={['update:department']}>
+                            <DepartmentFormPage />
+                        </ProtectedRoute>
                     }
                 />
                 {/* Add more routes here as needed */}

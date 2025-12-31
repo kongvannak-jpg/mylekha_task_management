@@ -75,6 +75,11 @@ const resources = {
             "last_login": "Last login",
             "tasks": "Tasks",
             "create_task": "Create tasks",
+            "departments": "Departments",
+            "new_department": "New Department",
+            "create_department": "Create Department",
+            "edit_department": "Edit Department",
+            "code": "Code",
         }
     },
     km: {
@@ -150,6 +155,11 @@ const resources = {
             "last_login": "ការចូលប្រើចុងក្រោយ",
             "tasks": "កិច្ចការ",
             "create_task": "បង្កើតកិច្ចការ",
+            "departments": "នាយកដ្ឋាន",
+            "new_department": "បង្កើតនាយកដ្ឋានថ្មី",
+            "code": "កូដ",
+            "create_department": "បង្កើតនាយកដ្ឋាន",
+            "edit_department": "កែប្រែនាយកដ្ឋាន",
         }
     }
 };

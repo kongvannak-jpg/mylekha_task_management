@@ -5,28 +5,24 @@ import { Column } from 'primereact/column';
 import { Menu } from 'primereact/menu';
 import { InputText } from 'primereact/inputtext';
 import { Skeleton } from 'primereact/skeleton';
-import { Toast } from 'primereact/toast';
-import { Tag } from 'primereact/tag';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+import { Button } from 'primereact/button';
+import ButtonCreate from '../../components/layouts/buttons/ButtonCreate';
+import { departmentsService } from '../../services/departments.service';
 import { useTranslation } from 'react-i18next';
 
-import ButtonCreate from '../../components/layouts/buttons/ButtonCreate';
-import { rolesService } from '../../services/roles.service';
-
-const RolesPage = () => {
-    const { t } = useTranslation();
+const DepartmentsPage = () => {
     const navigate = useNavigate();
     const menu = useRef(null);
     const toast = useRef(null);
-    const searchTimeout = useRef(null);
+    const { t } = useTranslation();
 
-    // --- STATE ---
-    const [roles, setRoles] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedRole, setSelectedRole] = useState(null);
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    // Pagination & Filter State
     const [lazyParams, setLazyParams] = useState({
         first: 0,
         rows: 10,
@@ -34,54 +30,57 @@ const RolesPage = () => {
         search: ''
     });
 
-    // --- MENU ITEMS ---
-    const items = [
+    const searchTimeout = useRef(null);
+
+    // --- MENU ACTIONS (Edit / Delete) ---
+    const menuItems = [
         {
-            label: 'Options',
-            items: [
-                {
-                    label: 'Edit Role',
-                    icon: 'pi pi-pencil',
-                    command: () => navigate(`/roles/edit/${selectedRole?.id}`)
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-trash',
-                    className: 'text-red-500',
-                    command: () => confirmDelete(selectedRole)
+            label: 'Edit',
+            icon: 'pi pi-pencil',
+            command: () => {
+                if (selectedDepartment) {
+                    navigate(`/departments/edit/${selectedDepartment.id}`);
                 }
-            ]
+            }
+        },
+        {
+            label: 'Delete',
+            icon: 'pi pi-trash',
+            className: 'text-red-500',
+            command: () => {
+                if (selectedDepartment) {
+                    confirmDelete(selectedDepartment);
+                }
+            }
         }
     ];
 
-    // --- 1. LOAD DATA ---
+    // --- LOAD DATA ---
     useEffect(() => {
-        loadRoles();
+        loadDepartments();
     }, [lazyParams]);
 
-    const loadRoles = async () => {
+    const loadDepartments = async () => {
         setLoading(true);
         try {
-            // Prepare query params for API
-            const params = {
+            const filters = {
                 page: lazyParams.page,
                 limit: lazyParams.rows,
                 search: lazyParams.search
             };
 
-            // Call API
-            const response = await rolesService.getAllRoles(params);
+            const response = await departmentsService.getAllDepartments(filters);
 
-            // Handle Response
-            const responseData = response.data || response;
-            const rolesList = Array.isArray(responseData) ? responseData : (responseData.data || []);
+            // Handle { data: [...] } or { data: { data: [...] } }
+            const responseData = response.data?.data || response.data || [];
+            const departArray = Array.isArray(responseData) ? responseData : (responseData.data || []);
 
-            setRoles(rolesList);
+            setDepartments(departArray);
             setTotalRecords(response.data?.meta?.total || response.data?.total || 0);
 
         } catch (error) {
-            console.error("Failed to load roles:", error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load roles' });
+            console.error("Failed to load departments:", error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load data' });
         } finally {
             setLoading(false);
         }
@@ -102,26 +101,21 @@ const RolesPage = () => {
         if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
         searchTimeout.current = setTimeout(() => {
-            setLazyParams({
-                ...lazyParams,
-                first: 0,
-                page: 1,
-                search: value
-            });
+            setLazyParams({ ...lazyParams, first: 0, page: 1, search: value });
         }, 500);
     };
 
-    const confirmDelete = (role) => {
+    const confirmDelete = (department) => {
         confirmDialog({
-            message: `Are you sure you want to delete "${role.name}"?`,
+            message: `Are you sure you want to delete "${department.name}"?`,
             header: 'Confirm Delete',
             icon: 'pi pi-exclamation-triangle',
             acceptClassName: 'p-button-danger',
             accept: async () => {
                 try {
-                    await rolesService.deleteRole(role.id);
-                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Role deleted', life: 3000 });
-                    loadRoles(); // Refresh list
+                    await departmentsService.deleteDepartment(department.id);
+                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Department deleted', life: 3000 });
+                    loadDepartments(); // Refresh list
                 } catch (error) {
                     toast.current.show({ severity: 'error', summary: 'Error', detail: 'Delete failed' });
                 }
@@ -135,48 +129,31 @@ const RolesPage = () => {
         return rowData.id;
     };
 
-    const nameBodyTemplate = (rowData) => {
-        if (loading) return (
-            <div className="flex items-center gap-2">
-                <Skeleton shape="circle" size="2rem" />
-                <Skeleton width="6rem" />
-            </div>
-        );
-        return (
-            <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{rowData.name}</span>
-            </div>
-        );
+    const codeBodyTemplate = (rowData) => {
+        if (loading) return <Skeleton width="4rem" />;
+        return <span className="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-xs">{rowData.code}</span>;
     };
 
-    const permissionsBodyTemplate = (rowData) => {
-        if (loading) return <Skeleton width="4rem" />;
-
-        // Count permissions if available
-        const count = rowData.permissions ? rowData.permissions.length : 0;
-
-        return (
-            <Tag
-                severity="info"
-                className='px-3 bg-blue-50 text-blue-700 border border-blue-100 rounded-full'
-                value={`${count} Permissions`}
-            />
-        );
+    const nameBodyTemplate = (rowData) => {
+        if (loading) return <Skeleton width="8rem" />;
+        return <span className="font-medium text-slate-700 dark:text-slate-200">{rowData.name}</span>;
     };
 
     const actionBodyTemplate = (rowData) => {
         if (loading) return <Skeleton shape="circle" size="2rem" className="mx-auto" />;
+
         return (
             <div className="flex justify-center">
-                <button
-                    onClick={(e) => {
-                        setSelectedRole(rowData);
-                        menu.current.toggle(e);
+                <Button
+                    icon="pi pi-ellipsis-v"
+                    rounded
+                    text
+                    severity="secondary"
+                    onClick={(event) => {
+                        setSelectedDepartment(rowData);
+                        menu.current.toggle(event);
                     }}
-                    className='text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors'
-                >
-                    <i className="pi pi-ellipsis-v"></i>
-                </button>
+                />
             </div>
         );
     };
@@ -185,11 +162,13 @@ const RolesPage = () => {
         <div className="bg-white py-4 dark:bg-slate-800 shadow-sm rounded-lg border border-gray-100 dark:border-slate-700">
             <Toast ref={toast} />
             <ConfirmDialog />
-            <Menu model={items} popup ref={menu} id="popup_menu" />
+
+            {/* Context Menu for Actions */}
+            <Menu model={menuItems} popup ref={menu} id="popup_menu" />
 
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 px-4 gap-4">
-                <h1 className="text-xl font-bold dark:text-white">{t('roles')}</h1>
+                <h1 className="text-xl font-bold dark:text-white">{t('departments')}</h1>
 
                 <div className='flex items-center gap-3 w-full md:w-auto'>
                     <div className="relative flex-1 md:flex-none">
@@ -202,8 +181,8 @@ const RolesPage = () => {
                     </div>
 
                     <ButtonCreate
-                        label={t('new_role')}
-                        onClick={() => navigate('/roles/form')}
+                        label={t('new_department')}
+                        onClick={() => navigate('/departments/form')}
                     />
                 </div>
             </div>
@@ -211,7 +190,7 @@ const RolesPage = () => {
             {/* Table */}
             <div className="px-2">
                 <DataTable
-                    value={loading ? Array.from({ length: lazyParams.rows }) : roles}
+                    value={loading ? Array.from({ length: lazyParams.rows }) : departments}
                     size="small"
                     responsiveLayout="scroll"
                     lazy={true}
@@ -220,9 +199,9 @@ const RolesPage = () => {
                     rows={lazyParams.rows}
                     totalRecords={totalRecords}
                     onPage={onPage}
-                    loading={false} // Custom skeleton loading
+                    loading={false}
                     rowsPerPageOptions={[5, 10, 20, 50]}
-                    emptyMessage="No roles found."
+                    emptyMessage="No departments found."
                     pt={{
                         header: { className: 'p-2 bg-transparent border-none' },
                         column: {
@@ -232,13 +211,13 @@ const RolesPage = () => {
                     }}
                 >
                     <Column header="ID" body={idBodyTemplate} style={{ width: '4rem' }} />
+                    <Column header={t('code')} body={codeBodyTemplate} style={{ width: '8rem' }} />
                     <Column header={t('name')} body={nameBodyTemplate} />
-                    <Column header={t('permissions')} body={permissionsBodyTemplate} />
-                    <Column header={t('actions')} body={actionBodyTemplate} style={{ width: '6rem', textAlign: 'center' }} />
+                    <Column header="Action" body={actionBodyTemplate} style={{ width: '6rem', textAlign: 'center' }} />
                 </DataTable>
             </div>
         </div>
     );
 };
 
-export default RolesPage;
+export default DepartmentsPage;
